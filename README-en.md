@@ -1,15 +1,15 @@
 ## Sqlite3 PHP Class
-Для полноценной работы требуется Sqlite3, собранный с поддержкой SQLITE_ENABLE_UPDATE_DELETE_LIMIT  
-Протестировано на версии 3.11.0
+Full operation requires Sqlite3 built with support for
+SQLITE_ENABLE_UPDATE_DELETE_LIMIT Tested on version 3.11.0
 
-## Установка
+## Installation
 
 ```
 composer require ufee/sqlite3
 ```
 
-## Структура
-Объект БД
+## Structure
+Object of the BD
 ```php
 \Ufee\Sqlite3\Database;
 $db = \Ufee\Sqlite3\Sqlite::database(string $path, array $options = [
@@ -21,12 +21,13 @@ $db = \Ufee\Sqlite3\Sqlite::database(string $path, array $options = [
 	'exceptions' => true
 ]);
 ```
-Объект Таблица
+Object Table
 ```php
 \Ufee\Sqlite3\Table;
 $table = $db->table(string $name);
 ```
-Объект Запрос
+Object Request
+
 ```php
 \Ufee\Sqlite3\Query\Insert;
 $insert = $table->insert(array $columns);
@@ -40,13 +41,13 @@ $update = $table->update(array $columns);
 \Ufee\Sqlite3\Query\Delete;
 $delete = $table->delete();
 ```
-Объект Коллекция Запросов
+Query Collection Object
 ```php
 \Ufee\Sqlite3\Queries;
 $queries = $db->queries();
 $queries = $table->queries();
 ```
-Отладка запросов 
+Debugging Queries 
 ```php
 $db->queries()->listen(function($data) {
 	echo 'Table: '.$data['table']."\n";
@@ -55,8 +56,8 @@ $db->queries()->listen(function($data) {
 });
 ```
 
-## Работа с классом
-Получение объекта БД
+## Working with the Class
+Working with the Class
 ```php
 $db = Sqlite::database('path/to/file.db');
 
@@ -65,24 +66,27 @@ $db = Sqlite::database($temp_db_path);
 
 $db = Sqlite::database(':memory:');
 ```
-Проверка на существование базы и создание
+Checking for the existence of the database and creating
+
 ```php
 if (!$db->exists()) {
 	$db->create();
 }
-```
-Или проверка на существование файла (быстрее)
+```Or check for file existence (faster)
+
 ```php
 if (!$db->fileExists()) {
 	$db->create();
 }
 ```
-Открытие соединения с БД  
-На практике не требуется, выполняется автоматически
+Opening a connection
+to the DS In practice is not required, it is performed automatically
+
 ```php
 $db->open();
 ```
-Выполнение произвольных запросов и команд
+Execute arbitrary queries and commands
+
 ```php
 $result = $db->query($query); // return Query\Result
 $rows = $result->getRows($mode = SQLITE3_ASSOC);
@@ -91,16 +95,19 @@ $result = $db->single($query, $entire = true); // return array
 $result = $db->exec($command); // return bool
 $result = $db->pragma($key, $val); // return bool
 ```
-Закрытие соединения с БД
+Closing the connection to the BD
+
 ```php
 $db->close();
 ```
-Получение объекта Таблицы
+Get a Table Object
+
 ```php
 $tables = $db->tables();
 $table = $db->table('test_table');
 ```
-Проверка на существование и создание
+Checking for existence and creation
+
 ```php
 if (!$table->exists()) {
 	// с указанием типов данных
@@ -119,31 +126,33 @@ if (!$table->exists()) {
 	]);
 }
 ```
-Получение информации о таблице
+Get information about a table
+
 ```php
 $info = $table->info($key = null);
 // [type, name, tbl_name, rootpage, sql]
 ```
-Получение информации о столбцах
+Get information about a table
+
 ```php
 $culumns = $table->columns($name = null);
 // [name => [cid, name, type, notnull, dflt_value, pk]]
 ```
-Задать свой тип данных столбца для последующих запросов
+Set your column data type for subsequent queries
 ```php
 $table->setColumnType(string $name, string $type); // integer, real, text, blob, null
 $table->setColumnType('category', 'integer');
 $table->setColumnType('title', 'text');
 ```
-Удаление таблицы
+Delete a table
 ```php
 $table->drop();
 ```
 
- ## Примеры запросов
-Запросы выполняются с использованием подготовленных выражений (автоматически).  
-Операторы условий: [=|>|<|<=|>=|!=|BETWEEN|NOT BETWEEN|IN|NOT IN|LIKE|NOT LIKE|GLOB|NOT GLOB]  
-Для нижеописанных примеров создаем БД и таблицы:
+ ## Examples of queries
+queries are executed using prepared statements (automatically). 
+Condition operators: [=|>|<|<=|>=|!=|BETWEEN|NOT BETWEEN|IN|NOT IN|LIKE|NOT LIKE|GLOB|NOT GLOB]  
+For the examples described below, create a database and tables: 
 ```php
 $db = \Ufee\Sqlite3\Sqlite::database(
 	tempnam(sys_get_temp_dir(), 'Sqlite3')
@@ -169,7 +178,7 @@ if (!$goods->exists()) {
 }
 ```
 
-## Запрос Insert
+## Insert Request 
 ```php
 $insert = $table->insert('id, category, data')
 	->orRollback()
@@ -181,7 +190,7 @@ $insert->rows(array $rows); // return bool
 // or
 $insert->row(array $row); // return bool|integer
 ```
-Вставка одной строки
+Insert single row 
 ```php
 $insert = $goods->insert('category, price, title');
 
